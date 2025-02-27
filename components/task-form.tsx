@@ -140,7 +140,7 @@ export default function TaskForm({ onSubmit, onCancel, initialTask }: TaskFormPr
             onChange={(e) => setTitle(e.target.value)}
             placeholder="Enter task title"
             required
-            className="rounded-full"
+            className="w-full px-3 py-2 text-sm sm:text-base rounded border"
           />
         </div>
 
@@ -174,7 +174,13 @@ export default function TaskForm({ onSubmit, onCancel, initialTask }: TaskFormPr
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0">
-              <Calendar mode="single" selected={dueDate} onSelect={setDueDate} initialFocus />
+              <Calendar 
+                mode="single" 
+                selected={dueDate} 
+                onSelect={setDueDate} 
+                fromDate={new Date()}
+                initialFocus 
+              />
             </PopoverContent>
           </Popover>
         </div>
@@ -257,7 +263,7 @@ export default function TaskForm({ onSubmit, onCancel, initialTask }: TaskFormPr
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
           placeholder="Add notes (optional)"
-          className="min-h-[100px] rounded-2xl"
+          className="w-full px-3 py-2 text-sm sm:text-base rounded border min-h-[100px]"
         />
       </div>
 

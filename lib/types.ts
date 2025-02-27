@@ -8,6 +8,7 @@ export interface Task {
   recurring?: "daily" | "weekly" | "monthly"
   notes?: string
   attachments?: Array<{ name: string; data: string }>
+  shared?: boolean
 }
 
 export enum ActionType {

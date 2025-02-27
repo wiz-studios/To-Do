@@ -92,3 +92,23 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+/* Responsive utility classes */
+.button-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+@media (max-width: 640px) {
+  .button-row {
+    gap: 0.25rem;
+  }
+}
+
+/* Adjust card padding for mobile */
+@media (max-width: 640px) {
+  .card-responsive {
+    padding: 1rem;
+  }
+}

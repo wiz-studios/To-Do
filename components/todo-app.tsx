@@ -258,11 +258,11 @@ export default function TodoApp() {
 
   return (
     <DndProvider backend={HTML5Backend}>
-      <div className="gradient-bg min-h-screen p-4 md:p-8">
-        <Card className="max-w-4xl mx-auto bg-white/90 dark:bg-card/90 backdrop-blur-sm">
-          <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle className="text-3xl font-bold text-primary">Advanced To-Do App</CardTitle>
-            <div className="flex items-center gap-2">
+      <div className="gradient-bg min-h-screen p-2 sm:p-4 md:p-8">
+        <Card className="max-w-[95%] w-full sm:max-w-4xl mx-auto bg-white/90 dark:bg-card/90 backdrop-blur-sm">
+          <CardHeader className="flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-y-0">
+            <CardTitle className="text-2xl sm:text-3xl font-bold text-primary">To-Do App</CardTitle>
+            <div className="button-row">
               <Button
                 variant="outline"
                 size="icon"
@@ -270,7 +270,7 @@ export default function TodoApp() {
                 title={theme === "dark" ? "Switch to Light Mode" : "Switch to Dark Mode"}
                 className="rounded-full"
               >
-                {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+                {theme === "dark" ? <Sun className="h-3 w-3 sm:h-4 sm:w-4" /> : <Moon className="h-3 w-3 sm:h-4 sm:w-4" />}
               </Button>
               <Button
                 variant="outline"
@@ -279,7 +279,7 @@ export default function TodoApp() {
                 title="Export Tasks"
                 className="rounded-full"
               >
-                <Download className="h-4 w-4" />
+                <Download className="h-3 w-3 sm:h-4 sm:w-4" />
               </Button>
               <Button
                 variant="outline"
@@ -288,7 +288,7 @@ export default function TodoApp() {
                 title="Import Tasks"
                 className="rounded-full"
               >
-                <Upload className="h-4 w-4" />
+                <Upload className="h-3 w-3 sm:h-4 sm:w-4" />
               </Button>
               <input type="file" ref={fileInputRef} onChange={handleFileUpload} accept=".txt" className="hidden" />
               <Button
@@ -299,7 +299,7 @@ export default function TodoApp() {
                 title="Undo"
                 className="rounded-full"
               >
-                <Undo className="h-4 w-4" />
+                <Undo className="h-3 w-3 sm:h-4 sm:w-4" />
               </Button>
               <Button
                 variant="outline"
@@ -309,12 +309,12 @@ export default function TodoApp() {
                 title="Redo"
                 className="rounded-full"
               >
-                <Redo className="h-4 w-4" />
+                <Redo className="h-3 w-3 sm:h-4 sm:w-4" />
               </Button>
               <Dialog>
                 <DialogTrigger asChild>
                   <Button variant="outline" size="icon" title="Share Tasks" className="rounded-full">
-                    <Share2 className="h-4 w-4" />
+                    <Share2 className="h-3 w-3 sm:h-4 sm:w-4" />
                   </Button>
                 </DialogTrigger>
                 <DialogContent>
@@ -331,7 +331,7 @@ export default function TodoApp() {
               </Dialog>
             </div>
           </CardHeader>
-          <CardContent>
+          <CardContent className="card-responsive">
             {isFormOpen ? (
               <TaskForm
                 onSubmit={editingTask ? handleUpdateTask : handleAddTask}

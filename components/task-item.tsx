@@ -2,7 +2,7 @@
 
 import { useState, useRef } from "react"
 import { useDrag, useDrop } from "react-dnd"
-import { Trash2, Edit, Paperclip, Calendar, ArrowUpDown } from "lucide-react"
+import { Trash2, Edit, Paperclip, Calendar, ArrowUpDown, Share2 } from "lucide-react"
 import { format } from "date-fns"
 import type { Task } from "@/lib/types"
 import { Button } from "@/components/ui/button"
@@ -127,6 +127,32 @@ export default function TaskItem({
       .replace(/<span style="color:(.*?)">(.*?)<\/span>/g, '<span style="color:$1">$2</span>')
   }
 
+  // Add this function inside the TaskItem component
+  const handleShare = async (task: Task) => {
+    const taskDetails = `Task: ${task.title}\nPriority: ${task.priority}\n${
+      task.dueDate ? `Due Date: ${new Date(task.dueDate).toLocaleDateString()}\n` : ''
+    }${task.notes ? `Notes: ${task.notes}` : ''}`;
+
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: 'Task Details',
+          text: taskDetails,
+        });
+      } catch (error) {
+        console.log('Error sharing:', error);
+      }
+    } else {
+      // Fallback to copying to clipboard
+      try {
+        await navigator.clipboard.writeText(taskDetails);
+        alert('Task details copied to clipboard!');
+      } catch (error) {
+        console.log('Error copying to clipboard:', error);
+      }
+    }
+  };
+
   return (
     <div
       ref={ref}
@@ -180,6 +206,14 @@ export default function TaskItem({
               <Paperclip className="h-4 w-4" />
             </Button>
           )}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+            onClick={() => handleShare(task)}
+          >
+            <Share2 className="h-4 w-4" />
+          </Button>
           <Button
             variant="ghost"
             size="icon"
