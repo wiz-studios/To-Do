@@ -130,8 +130,8 @@ export default function TaskForm({ onSubmit, onCancel, initialTask }: TaskFormPr
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 mb-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <form onSubmit={handleSubmit} className="space-y-4 mb-6 w-full max-w-full sm:max-w-3xl mx-auto p-2 sm:p-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="space-y-2">
           <Label htmlFor="task-title">Task Title</Label>
           <Input
@@ -206,7 +206,7 @@ export default function TaskForm({ onSubmit, onCancel, initialTask }: TaskFormPr
 
       <div className="space-y-2">
         <Label htmlFor="task-notes">Notes</Label>
-        <div className="flex items-center space-x-2 mb-2">
+        <div className="flex flex-wrap items-center gap-2 mb-2">
           <ToggleGroup type="multiple" className="rounded-full">
             <ToggleGroupItem
               value="bold"
@@ -308,11 +308,11 @@ export default function TaskForm({ onSubmit, onCancel, initialTask }: TaskFormPr
         )}
       </div>
 
-      <div className="flex justify-end gap-2">
-        <Button type="button" variant="outline" onClick={onCancel} className="rounded-full">
+      <div className="flex flex-col sm:flex-row justify-end gap-2">
+        <Button type="button" variant="outline" onClick={onCancel} className="rounded-full w-full sm:w-auto">
           Cancel
         </Button>
-        <Button type="submit" className="button-gradient rounded-full">
+        <Button type="submit" className="button-gradient rounded-full w-full sm:w-auto">
           {initialTask ? "Update Task" : "Add Task"}
         </Button>
       </div>

@@ -260,9 +260,9 @@ export default function TodoApp() {
     <DndProvider backend={HTML5Backend}>
       <div className="gradient-bg min-h-screen p-2 sm:p-4 md:p-8">
         <Card className="max-w-[95%] w-full sm:max-w-4xl mx-auto bg-white/90 dark:bg-card/90 backdrop-blur-sm">
-          <CardHeader className="flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-y-0">
-            <CardTitle className="text-2xl sm:text-3xl font-bold text-primary">To-Do App</CardTitle>
-            <div className="button-row">
+          <CardHeader className="flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-y-0 p-4 sm:p-6">
+            <CardTitle className="text-xl sm:text-2xl md:text-3xl font-bold text-primary">To-Do App</CardTitle>
+            <div className="button-row flex flex-wrap gap-2 justify-center sm:justify-end">
               <Button
                 variant="outline"
                 size="icon"
@@ -331,7 +331,7 @@ export default function TodoApp() {
               </Dialog>
             </div>
           </CardHeader>
-          <CardContent className="card-responsive">
+          <CardContent className="p-4 sm:p-6">
             {isFormOpen ? (
               <TaskForm
                 onSubmit={editingTask ? handleUpdateTask : handleAddTask}

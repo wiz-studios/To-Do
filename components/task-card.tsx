@@ -1,15 +1,43 @@
-import { Share2, Trash2 } from "lucide-react"
-// ...existing code...
+import { Share2, Trash2, AlignLeft } from "lucide-react"
+import { Card, CardContent } from "@/components/ui/card"
+import { Pencil } from "lucide-react"
+import { type Task } from "@/lib/types"
+import { useDrag, useDrop } from "react-dnd"
+import { Checkbox } from "@/components/ui/checkbox"
+import { Button } from "@/components/ui/button"
+import { useRef } from "react"
+import { format } from "date-fns"
 
 interface TaskCardProps {
   task: Task
-  onComplete: (id: string) => void
-  onDelete: (id: string) => void
-  onEdit: (task: Task) => void
+  index: number
+  onToggleComplete: (id: string) => void
+  onDeleteTask: (id: string) => void
+  onEditTask: (id: string) => void
+  onReorderTasks: (dragIndex: number, hoverIndex: number) => void
   onShare: (task: Task) => void
 }
 
-export function TaskCard({ task, onComplete, onDelete, onEdit, onShare }: TaskCardProps) {
+export default function TaskCard({
+  task,
+  index,
+  onToggleComplete,
+  onDeleteTask,
+  onEditTask,
+  onReorderTasks,
+  onShare,
+}: TaskCardProps) {
+  const dragDropRef = useRef<HTMLDivElement>(null)
+  const [{ isDragging }, drag] = useDrag({
+    type: 'TASK',
+    item: { index },
+    collect: (monitor) => ({
+      isDragging: monitor.isDragging(),
+    }),
+  })
+
+  drag(dragDropRef)
+
   const handleShare = async (task: Task) => {
     const shareText = `Task: ${task.title}\nDue: ${task.dueDate ? format(new Date(task.dueDate), 'PPP') : 'No due date'}\nPriority: ${task.priority}`
 
@@ -30,55 +58,54 @@ export function TaskCard({ task, onComplete, onDelete, onEdit, onShare }: TaskCa
   }
 
   return (
-    <div className="group relative bg-white dark:bg-gray-800 rounded-lg shadow p-4 mb-4">
-      // ...existing code...
-      <div className="absolute right-2 top-2 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-8 w-8 rounded-full"
-          onClick={() => handleShare(task)}
-        >
-          <Share2 className="h-4 w-4" />
-        </Button>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-8 w-8 text-red-500 rounded-full"
-          onClick={() => onDelete(task.id)}
-        >
-          <Trash2 className="h-4 w-4" />
-        </Button>
-      </div>
-      <div className="flex items-center gap-2 mt-4">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => onEdit(task)}
-          className="rounded-full"
-        >
-          Edit
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => onDelete(task.id)}
-          className="rounded-full text-red-500 hover:text-red-700"
-        >
-          Delete
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => onShare(task)}
-          className={cn(
-            "rounded-full",
-            task.shared && "bg-blue-100 dark:bg-blue-900"
-          )}
-        >
-          <Share2 className="h-4 w-4" />
-        </Button>
-      </div>
+    <div ref={dragDropRef} style={{ opacity: isDragging ? 0.5 : 1 }}>
+      <Card className="mb-3 cursor-move">
+        <CardContent className="p-4">
+          <div className="flex items-start gap-2">
+            <Checkbox
+              checked={task.completed}
+              onCheckedChange={() => onToggleComplete(task.id)}
+              className="mt-1"
+            />
+            <div className="flex-1">
+              <div className="flex items-center gap-2">
+                <span className={`text-base ${task.completed ? "line-through text-muted-foreground" : ""}`}>
+                  {task.title}
+                </span>
+                {task.notes && (
+                  <AlignLeft className="h-4 w-4 text-muted-foreground" />
+                )}
+              </div>
+              {task.notes && (
+                <div className="mt-2 text-sm text-muted-foreground bg-muted/50 p-2 rounded-md">
+                  {task.notes}
+                </div>
+              )}
+              {task.dueDate && (
+                <div className="mt-2 text-xs text-muted-foreground">
+                  Due: {new Date(task.dueDate).toLocaleDateString()}
+                </div>
+              )}
+            </div>
+            <div className="flex gap-2">
+              <Button variant="ghost" size="icon" onClick={() => onEditTask(task.id)}>
+                <Pencil className="h-4 w-4" />
+              </Button>
+              <Button variant="ghost" size="icon" onClick={() => onDeleteTask(task.id)}>
+                <Trash2 className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 rounded-full"
+                onClick={() => handleShare(task)}
+              >
+                <Share2 className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   )
 }

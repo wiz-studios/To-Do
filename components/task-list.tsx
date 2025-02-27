@@ -44,9 +44,9 @@ export default function TaskList({ tasks, onToggleComplete, onDeleteTask, onEdit
   }
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-3 w-full max-w-full overflow-x-hidden px-2 sm:px-4">
       {sortedTasks.map((task, index) => (
-        <div key={task.id} className="p-2 sm:p-4 border rounded-lg mb-2 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+        <div key={task.id} className="p-2 sm:p-4 border rounded-lg mb-2 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 w-full">
           <div className="flex items-start sm:items-center gap-2 w-full sm:w-auto">
             <TaskItem
               task={task}
