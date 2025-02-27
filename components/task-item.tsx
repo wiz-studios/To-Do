@@ -2,7 +2,7 @@
 
 import { useState, useRef } from "react"
 import { useDrag, useDrop } from "react-dnd"
-import { Trash2, Edit, Paperclip, Calendar, ArrowUpDown, Share2 } from "lucide-react"
+import { Trash2, Edit, Paperclip, Calendar, ArrowUpDown, ChevronDown, ChevronUp } from "lucide-react"
 import { format } from "date-fns"
 import type { Task } from "@/lib/types"
 import { Button } from "@/components/ui/button"
@@ -28,6 +28,7 @@ export default function TaskItem({
   onReorderTasks,
 }: TaskItemProps) {
   const [isOpen, setIsOpen] = useState(false)
+  const [isNotesOpen, setIsNotesOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
 
   // Set up drag and drop
@@ -127,76 +128,59 @@ export default function TaskItem({
       .replace(/<span style="color:(.*?)">(.*?)<\/span>/g, '<span style="color:$1">$2</span>')
   }
 
-  // Add this function inside the TaskItem component
-  const handleShare = async (task: Task) => {
-    const taskDetails = `Task: ${task.title}\nPriority: ${task.priority}\n${
-      task.dueDate ? `Due Date: ${new Date(task.dueDate).toLocaleDateString()}\n` : ''
-    }${task.notes ? `Notes: ${task.notes}` : ''}`;
-
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: 'Task Details',
-          text: taskDetails,
-        });
-      } catch (error) {
-        console.log('Error sharing:', error);
-      }
-    } else {
-      // Fallback to copying to clipboard
-      try {
-        await navigator.clipboard.writeText(taskDetails);
-        alert('Task details copied to clipboard!');
-      } catch (error) {
-        console.log('Error copying to clipboard:', error);
-      }
-    }
-  };
-
   return (
     <div
       ref={ref}
-      className={`task-item p-2 sm:p-4 mb-3 ${isDragging ? "opacity-50" : "opacity-100"} ${
+      className={`task-item p-4 mb-3 ${
         task.completed ? "bg-gray-100 dark:bg-gray-700" : ""
       } transition-all duration-200 ease-in-out`}
     >
-      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
-        <div className="flex items-center gap-3 w-full sm:w-auto">
-          <div className="flex-shrink-0 cursor-grab" title="Drag to reorder">
-            <ArrowUpDown className="h-4 w-4 text-gray-400" />
-          </div>
-          <Checkbox
-            checked={task.completed}
-            onCheckedChange={() => onToggleComplete(task.id)}
-            id={`task-${task.id}`}
-            className="flex-shrink-0"
-          />
-          <div className="flex-grow min-w-0">
-            <div className="flex flex-wrap items-center gap-2">
-              <label
-                htmlFor={`task-${task.id}`}
-                className={`font-medium cursor-pointer truncate ${
-                  task.completed ? "line-through text-gray-500 dark:text-gray-400" : ""
-                }`}
-              >
-                {task.title}
-              </label>
-              {task.priority && <Badge className={`${getPriorityColor()} text-white text-xs whitespace-nowrap`}>{task.priority}</Badge>}
-              {task.recurring && (
-                <Badge variant="outline" className="text-xs whitespace-nowrap">
-                  {task.recurring}
-                </Badge>
-              )}
-            </div>
-            {formattedDueDate && (
-              <div className="flex items-center text-xs text-gray-500 dark:text-gray-400 mt-1">
-                <Calendar className="h-3 w-3 mr-1" />
-                {formattedDueDate}
-              </div>
+      <div className="flex items-center gap-3">
+        <div className="flex-shrink-0 cursor-grab" title="Drag to reorder">
+          <ArrowUpDown className="h-4 w-4 text-gray-400" />
+        </div>
+        <Checkbox
+          checked={task.completed}
+          onCheckedChange={() => onToggleComplete(task.id)}
+          id={`task-${task.id}`}
+          className="flex-shrink-0"
+        />
+        <div className="flex-grow">
+          <div className="flex items-center gap-2">
+            <label
+              htmlFor={`task-${task.id}`}
+              className={`font-medium cursor-pointer ${
+                task.completed ? "line-through text-gray-500 dark:text-gray-400" : ""
+              }`}
+            >
+              {task.title}
+            </label>
+            {task.priority && <Badge className={`${getPriorityColor()} text-white text-xs`}>{task.priority}</Badge>}
+            {task.recurring && (
+              <Badge variant="outline" className="text-xs">
+                {task.recurring}
+              </Badge>
             )}
           </div>
+          {formattedDueDate && (
+            <div className="flex items-center text-xs text-gray-500 dark:text-gray-400 mt-1">
+              <Calendar className="h-3 w-3 mr-1" />
+              {formattedDueDate}
+            </div>
+          )}
         </div>
-        <div className="flex items-center gap-1 flex-shrink-0 ml-auto mt-2 sm:mt-0">
+        <div className="flex items-center gap-1 flex-shrink-0">
+          {task.additionalNotes && task.additionalNotes.length > 0 && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 rounded-full"
+              onClick={() => setIsNotesOpen(!isNotesOpen)}
+              title="View additional notes"
+            >
+              {isNotesOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+            </Button>
+          )}
           {task.attachments && task.attachments.length > 0 && (
             <Button
               variant="ghost"
@@ -208,14 +192,6 @@ export default function TaskItem({
               <Paperclip className="h-4 w-4" />
             </Button>
           )}
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
-            onClick={() => handleShare(task)}
-          >
-            <Share2 className="h-4 w-4" />
-          </Button>
           <Button
             variant="ghost"
             size="icon"
@@ -236,6 +212,18 @@ export default function TaskItem({
           </Button>
         </div>
       </div>
+
+      {task.additionalNotes && task.additionalNotes.length > 0 && (
+        <Collapsible open={isNotesOpen} onOpenChange={setIsNotesOpen}>
+          <CollapsibleContent className="mt-2">
+            <ul className="list-disc list-inside text-sm text-gray-600 dark:text-gray-300">
+              {task.additionalNotes.map((note, index) => (
+                <li key={index}>{note}</li>
+              ))}
+            </ul>
+          </CollapsibleContent>
+        </Collapsible>
+      )}
 
       <Collapsible open={isOpen} onOpenChange={setIsOpen}>
         <CollapsibleContent className="mt-2 space-y-2">

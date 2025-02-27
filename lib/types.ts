@@ -7,8 +7,8 @@ export interface Task {
   dueDate?: string
   recurring?: "daily" | "weekly" | "monthly"
   notes?: string
+  additionalNotes?: string[] // New field for additional notes
   attachments?: Array<{ name: string; data: string }>
-  shared?: boolean
 }
 
 export enum ActionType {
