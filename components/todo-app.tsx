@@ -261,9 +261,9 @@ export default function TodoApp() {
     <DndProvider backend={HTML5Backend}>
       <div className="gradient-bg min-h-screen p-4 md:p-8">
         <Card className="max-w-4xl mx-auto bg-white/90 dark:bg-card/90 backdrop-blur-sm">
-          <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle className="text-3xl font-bold text-primary">Advanced To-Do App</CardTitle>
-            <div className="flex items-center gap-2">
+          <CardHeader className="flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-y-0">
+            <CardTitle className="text-2xl sm:text-3xl font-bold text-primary">Advanced To-Do App</CardTitle>
+            <div className="flex flex-wrap items-center justify-center sm:justify-end gap-2">
               <Button
                 variant="outline"
                 size="icon"
@@ -318,7 +318,7 @@ export default function TodoApp() {
                     <Share2 className="h-4 w-4" />
                   </Button>
                 </DialogTrigger>
-                <DialogContent>
+                <DialogContent className="sm:max-w-[425px]">
                   <DialogHeader>
                     <DialogTitle>Share Tasks</DialogTitle>
                   </DialogHeader>
@@ -349,7 +349,7 @@ export default function TodoApp() {
                   setEditingTask(null)
                   requestNotificationPermission()
                 }}
-                className="mb-4 button-gradient"
+                className="mb-4 button-gradient w-full sm:w-auto"
               >
                 <Plus className="mr-2 h-4 w-4" /> Add New Task
               </Button>

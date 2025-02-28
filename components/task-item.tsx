@@ -185,47 +185,49 @@ ${task.recurring ? `Recurring: ${task.recurring}` : ""}`
         task.completed ? "bg-gray-100 dark:bg-gray-700" : ""
       } transition-all duration-200 ease-in-out`}
     >
-      <div className="flex items-start gap-3">
-        <div className="flex-shrink-0 cursor-grab mt-1" title="Drag to reorder">
-          <ArrowUpDown className="h-4 w-4 text-gray-400" />
-        </div>
-        <Checkbox
-          checked={task.completed}
-          onCheckedChange={() => onToggleComplete(task.id)}
-          id={`task-${task.id}`}
-          className="flex-shrink-0 mt-1"
-        />
-        <div className="flex-grow">
-          <div className="flex items-center gap-2">
-            <label
-              htmlFor={`task-${task.id}`}
-              className={`font-medium cursor-pointer ${
-                task.completed ? "line-through text-gray-500 dark:text-gray-400" : ""
-              }`}
-            >
-              {task.title}
-            </label>
-            {task.priority && <Badge className={`${getPriorityColor()} text-white text-xs`}>{task.priority}</Badge>}
-            {task.recurring && (
-              <Badge variant="outline" className="text-xs">
-                {task.recurring}
-              </Badge>
+      <div className="flex flex-col sm:flex-row items-start gap-3">
+        <div className="flex items-center gap-3 w-full sm:w-auto">
+          <div className="flex-shrink-0 cursor-grab mt-1" title="Drag to reorder">
+            <ArrowUpDown className="h-4 w-4 text-gray-400" />
+          </div>
+          <Checkbox
+            checked={task.completed}
+            onCheckedChange={() => onToggleComplete(task.id)}
+            id={`task-${task.id}`}
+            className="flex-shrink-0 mt-1"
+          />
+          <div className="flex-grow">
+            <div className="flex flex-wrap items-center gap-2">
+              <label
+                htmlFor={`task-${task.id}`}
+                className={`font-medium cursor-pointer ${
+                  task.completed ? "line-through text-gray-500 dark:text-gray-400" : ""
+                }`}
+              >
+                {task.title}
+              </label>
+              {task.priority && <Badge className={`${getPriorityColor()} text-white text-xs`}>{task.priority}</Badge>}
+              {task.recurring && (
+                <Badge variant="outline" className="text-xs">
+                  {task.recurring}
+                </Badge>
+              )}
+            </div>
+            {task.notes && (
+              <div
+                className="text-sm text-gray-600 dark:text-gray-300 mt-2"
+                dangerouslySetInnerHTML={{ __html: renderRichText(task.notes) }}
+              />
+            )}
+            {task.dueDate && (
+              <div className="flex items-center text-xs text-gray-500 dark:text-gray-400 mt-1">
+                <Calendar className="h-3 w-3 mr-1" />
+                {format(new Date(task.dueDate), "MMM d, yyyy")}
+              </div>
             )}
           </div>
-          {task.notes && (
-            <div
-              className="text-sm text-gray-600 dark:text-gray-300 mt-2"
-              dangerouslySetInnerHTML={{ __html: renderRichText(task.notes) }}
-            />
-          )}
-          {task.dueDate && (
-            <div className="flex items-center text-xs text-gray-500 dark:text-gray-400 mt-1">
-              <Calendar className="h-3 w-3 mr-1" />
-              {format(new Date(task.dueDate), "MMM d, yyyy")}
-            </div>
-          )}
         </div>
-        <div className="flex items-center gap-1 flex-shrink-0">
+        <div className="flex items-center gap-1 flex-shrink-0 mt-2 sm:mt-0">
           {task.attachments && task.attachments.length > 0 && (
             <Button
               variant="ghost"
