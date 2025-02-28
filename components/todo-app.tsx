@@ -17,6 +17,7 @@ import { useTaskHistory } from "@/lib/use-task-history"
 import { useNotifications } from "@/lib/use-notifications"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Toaster } from "@/components/ui/toaster"
+import Link from "next/link"
 
 export default function TodoApp() {
   const [tasks, setTasks] = useState<Task[]>([])
@@ -224,7 +225,7 @@ export default function TodoApp() {
     const taskList = tasks.map((task) => `- ${task.title}`).join("\n")
     const shareText = `My To-Do List:\n\n${taskList}`
 
-    if (navigator.share && navigator.canShare) {
+    if (navigator.share) {
       try {
         await navigator.share({
           title: "My To-Do List",
@@ -259,10 +260,10 @@ export default function TodoApp() {
 
   return (
     <DndProvider backend={HTML5Backend}>
-      <div className="gradient-bg min-h-screen p-4 md:p-8">
-        <Card className="max-w-4xl mx-auto bg-white/90 dark:bg-card/90 backdrop-blur-sm">
+      <div className="gradient-bg min-h-screen p-4 md:p-8 flex flex-col">
+        <Card className="max-w-4xl mx-auto bg-white/90 dark:bg-card/90 backdrop-blur-sm flex-grow">
           <CardHeader className="flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-y-0">
-            <CardTitle className="text-2xl sm:text-3xl font-bold text-primary">To-Do App</CardTitle>
+            <CardTitle className="text-2xl sm:text-3xl font-bold text-primary">Advanced To-Do App</CardTitle>
             <div className="flex flex-wrap items-center justify-center sm:justify-end gap-2">
               <Button
                 variant="outline"
@@ -364,6 +365,13 @@ export default function TodoApp() {
             />
           </CardContent>
         </Card>
+        <footer className="mt-8 text-center text-sm text-gray-600 dark:text-gray-400">
+          © 2025{" "}
+          <Link href="https://ronoh-portfolio-14.vercel.app/" className="hover:underline">
+            Wiz Dev Studios
+          </Link>
+          . All rights reserved.
+        </footer>
       </div>
       <Toaster />
     </DndProvider>
