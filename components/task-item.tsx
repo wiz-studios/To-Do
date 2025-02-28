@@ -2,13 +2,14 @@
 
 import { useState, useRef } from "react"
 import { useDrag, useDrop } from "react-dnd"
-import { Trash2, Edit, Paperclip, Calendar, ArrowUpDown, ChevronDown, ChevronUp } from "lucide-react"
+import { Trash2, Edit, Paperclip, Calendar, ArrowUpDown, Share2 } from "lucide-react"
 import { format } from "date-fns"
 import type { Task } from "@/lib/types"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Badge } from "@/components/ui/badge"
 import { Collapsible, CollapsibleContent } from "@/components/ui/collapsible"
+import { toast } from "@/components/ui/use-toast"
 
 interface TaskItemProps {
   task: Task
@@ -28,7 +29,6 @@ export default function TaskItem({
   onReorderTasks,
 }: TaskItemProps) {
   const [isOpen, setIsOpen] = useState(false)
-  const [isNotesOpen, setIsNotesOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
 
   // Set up drag and drop
@@ -126,6 +126,56 @@ export default function TaskItem({
       .replace(/\*(.*?)\*/g, "<em>$1</em>")
       .replace(/__(.*?)__/g, "<u>$1</u>")
       .replace(/<span style="color:(.*?)">(.*?)<\/span>/g, '<span style="color:$1">$2</span>')
+      .replace(/^\d+\.\s/gm, "<ol><li>$&</li></ol>")
+      .replace(/^-\s/gm, "<ul><li>$&</li></ul>")
+      .replace(/\n/g, "<br>")
+  }
+
+  const handleShareTask = async () => {
+    const shareText = `Task: ${task.title}
+${task.notes ? `Notes: ${task.notes}` : ""}
+${task.dueDate ? `Due: ${format(new Date(task.dueDate), "MMM d, yyyy")}` : ""}
+Priority: ${task.priority || "Not set"}
+${task.recurring ? `Recurring: ${task.recurring}` : ""}`
+
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: "Shared Task",
+          text: shareText,
+        })
+        toast({
+          title: "Task shared successfully",
+          description: "The task details have been shared.",
+        })
+      } catch (error) {
+        if (error instanceof Error && error.name !== "AbortError") {
+          console.error("Error sharing task:", error)
+          showFallbackShare(shareText)
+        }
+      }
+    } else {
+      showFallbackShare(shareText)
+    }
+  }
+
+  const showFallbackShare = (shareText: string) => {
+    navigator.clipboard
+      .writeText(shareText)
+      .then(() => {
+        toast({
+          title: "Task copied to clipboard",
+          description: "The task details have been copied to your clipboard.",
+        })
+      })
+      .catch((err) => {
+        console.error("Failed to copy text: ", err)
+        toast({
+          title: "Sharing failed",
+          description: "Unable to share or copy the task. Please try again.",
+          variant: "destructive",
+        })
+      })
   }
 
   return (
@@ -135,15 +185,15 @@ export default function TaskItem({
         task.completed ? "bg-gray-100 dark:bg-gray-700" : ""
       } transition-all duration-200 ease-in-out`}
     >
-      <div className="flex items-center gap-3">
-        <div className="flex-shrink-0 cursor-grab" title="Drag to reorder">
+      <div className="flex items-start gap-3">
+        <div className="flex-shrink-0 cursor-grab mt-1" title="Drag to reorder">
           <ArrowUpDown className="h-4 w-4 text-gray-400" />
         </div>
         <Checkbox
           checked={task.completed}
           onCheckedChange={() => onToggleComplete(task.id)}
           id={`task-${task.id}`}
-          className="flex-shrink-0"
+          className="flex-shrink-0 mt-1"
         />
         <div className="flex-grow">
           <div className="flex items-center gap-2">
@@ -162,25 +212,20 @@ export default function TaskItem({
               </Badge>
             )}
           </div>
-          {formattedDueDate && (
+          {task.notes && (
+            <div
+              className="text-sm text-gray-600 dark:text-gray-300 mt-2"
+              dangerouslySetInnerHTML={{ __html: renderRichText(task.notes) }}
+            />
+          )}
+          {task.dueDate && (
             <div className="flex items-center text-xs text-gray-500 dark:text-gray-400 mt-1">
               <Calendar className="h-3 w-3 mr-1" />
-              {formattedDueDate}
+              {format(new Date(task.dueDate), "MMM d, yyyy")}
             </div>
           )}
         </div>
         <div className="flex items-center gap-1 flex-shrink-0">
-          {task.additionalNotes && task.additionalNotes.length > 0 && (
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8 rounded-full"
-              onClick={() => setIsNotesOpen(!isNotesOpen)}
-              title="View additional notes"
-            >
-              {isNotesOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-            </Button>
-          )}
           {task.attachments && task.attachments.length > 0 && (
             <Button
               variant="ghost"
@@ -204,6 +249,15 @@ export default function TaskItem({
           <Button
             variant="ghost"
             size="icon"
+            className="h-8 w-8 rounded-full"
+            onClick={handleShareTask}
+            title="Share task"
+          >
+            <Share2 className="h-4 w-4" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
             className="h-8 w-8 text-red-500 hover:text-red-700 rounded-full"
             onClick={() => onDeleteTask(task.id)}
             title="Delete task"
@@ -213,27 +267,8 @@ export default function TaskItem({
         </div>
       </div>
 
-      {task.additionalNotes && task.additionalNotes.length > 0 && (
-        <Collapsible open={isNotesOpen} onOpenChange={setIsNotesOpen}>
-          <CollapsibleContent className="mt-2">
-            <ul className="list-disc list-inside text-sm text-gray-600 dark:text-gray-300">
-              {task.additionalNotes.map((note, index) => (
-                <li key={index}>{note}</li>
-              ))}
-            </ul>
-          </CollapsibleContent>
-        </Collapsible>
-      )}
-
       <Collapsible open={isOpen} onOpenChange={setIsOpen}>
         <CollapsibleContent className="mt-2 space-y-2">
-          {task.notes && (
-            <div className="text-sm bg-gray-50 dark:bg-gray-700 p-3 rounded-md">
-              <p className="font-medium text-xs mb-1 text-gray-500 dark:text-gray-400">Notes:</p>
-              <div className="whitespace-pre-wrap" dangerouslySetInnerHTML={{ __html: renderRichText(task.notes) }} />
-            </div>
-          )}
-
           {task.attachments && task.attachments.length > 0 && (
             <div>
               <p className="font-medium text-xs mb-1 text-gray-500 dark:text-gray-400">Attachments:</p>

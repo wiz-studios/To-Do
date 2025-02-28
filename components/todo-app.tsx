@@ -16,6 +16,7 @@ import { saveTasksToLocalStorage, getTasksFromLocalStorage } from "@/lib/storage
 import { useTaskHistory } from "@/lib/use-task-history"
 import { useNotifications } from "@/lib/use-notifications"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Toaster } from "@/components/ui/toaster"
 
 export default function TodoApp() {
   const [tasks, setTasks] = useState<Task[]>([])
@@ -223,7 +224,7 @@ export default function TodoApp() {
     const taskList = tasks.map((task) => `- ${task.title}`).join("\n")
     const shareText = `My To-Do List:\n\n${taskList}`
 
-    if (navigator.share && navigator.canShare({ text: shareText })) {
+    if (navigator.share && navigator.canShare) {
       try {
         await navigator.share({
           title: "My To-Do List",
@@ -258,11 +259,11 @@ export default function TodoApp() {
 
   return (
     <DndProvider backend={HTML5Backend}>
-      <div className="gradient-bg min-h-screen p-2 sm:p-4 md:p-8">
-        <Card className="max-w-[95%] w-full sm:max-w-4xl mx-auto bg-white/90 dark:bg-card/90 backdrop-blur-sm">
-          <CardHeader className="flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-y-0 p-4 sm:p-6">
-            <CardTitle className="text-xl sm:text-2xl md:text-3xl font-bold text-primary">To-Do App</CardTitle>
-            <div className="button-row flex flex-wrap gap-2 justify-center sm:justify-end">
+      <div className="gradient-bg min-h-screen p-4 md:p-8">
+        <Card className="max-w-4xl mx-auto bg-white/90 dark:bg-card/90 backdrop-blur-sm">
+          <CardHeader className="flex flex-row items-center justify-between">
+            <CardTitle className="text-3xl font-bold text-primary">Advanced To-Do App</CardTitle>
+            <div className="flex items-center gap-2">
               <Button
                 variant="outline"
                 size="icon"
@@ -270,7 +271,7 @@ export default function TodoApp() {
                 title={theme === "dark" ? "Switch to Light Mode" : "Switch to Dark Mode"}
                 className="rounded-full"
               >
-                {theme === "dark" ? <Sun className="h-3 w-3 sm:h-4 sm:w-4" /> : <Moon className="h-3 w-3 sm:h-4 sm:w-4" />}
+                {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
               </Button>
               <Button
                 variant="outline"
@@ -279,7 +280,7 @@ export default function TodoApp() {
                 title="Export Tasks"
                 className="rounded-full"
               >
-                <Download className="h-3 w-3 sm:h-4 sm:w-4" />
+                <Download className="h-4 w-4" />
               </Button>
               <Button
                 variant="outline"
@@ -288,7 +289,7 @@ export default function TodoApp() {
                 title="Import Tasks"
                 className="rounded-full"
               >
-                <Upload className="h-3 w-3 sm:h-4 sm:w-4" />
+                <Upload className="h-4 w-4" />
               </Button>
               <input type="file" ref={fileInputRef} onChange={handleFileUpload} accept=".txt" className="hidden" />
               <Button
@@ -299,7 +300,7 @@ export default function TodoApp() {
                 title="Undo"
                 className="rounded-full"
               >
-                <Undo className="h-3 w-3 sm:h-4 sm:w-4" />
+                <Undo className="h-4 w-4" />
               </Button>
               <Button
                 variant="outline"
@@ -309,12 +310,12 @@ export default function TodoApp() {
                 title="Redo"
                 className="rounded-full"
               >
-                <Redo className="h-3 w-3 sm:h-4 sm:w-4" />
+                <Redo className="h-4 w-4" />
               </Button>
               <Dialog>
                 <DialogTrigger asChild>
                   <Button variant="outline" size="icon" title="Share Tasks" className="rounded-full">
-                    <Share2 className="h-3 w-3 sm:h-4 sm:w-4" />
+                    <Share2 className="h-4 w-4" />
                   </Button>
                 </DialogTrigger>
                 <DialogContent>
@@ -331,7 +332,7 @@ export default function TodoApp() {
               </Dialog>
             </div>
           </CardHeader>
-          <CardContent className="p-4 sm:p-6">
+          <CardContent>
             {isFormOpen ? (
               <TaskForm
                 onSubmit={editingTask ? handleUpdateTask : handleAddTask}
@@ -364,6 +365,7 @@ export default function TodoApp() {
           </CardContent>
         </Card>
       </div>
+      <Toaster />
     </DndProvider>
   )
 }
