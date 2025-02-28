@@ -262,7 +262,7 @@ export default function TodoApp() {
       <div className="gradient-bg min-h-screen p-4 md:p-8">
         <Card className="max-w-4xl mx-auto bg-white/90 dark:bg-card/90 backdrop-blur-sm">
           <CardHeader className="flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-y-0">
-            <CardTitle className="text-2xl sm:text-3xl font-bold text-primary">Advanced To-Do App</CardTitle>
+            <CardTitle className="text-2xl sm:text-3xl font-bold text-primary">To-Do App</CardTitle>
             <div className="flex flex-wrap items-center justify-center sm:justify-end gap-2">
               <Button
                 variant="outline"
